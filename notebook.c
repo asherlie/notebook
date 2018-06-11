@@ -4,12 +4,12 @@ notes can be anywhere within the #if 0 and the #endif
 and they will be pretty printed
 
 notes can contain any
-number
-of
-lines
+      number
+            of
+                  lines
 and any character !@#$%^&*()-=_+  /* */
 #endif
-int nl = __LINE__-4;
+int nl = __LINE__-3;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +22,10 @@ int mtime(char* path){
 }
 
 int main(int argc, char* argv[]){
+      _Bool fill_all_ws = 0;
+      for(int i = 1; i < argc; ++i){
+            if(!strncmp(argv[i], "-fa", 4))fill_all_ws = 1;
+      }
       if(*argv[0] == '.')argv[0] += 2;
       if(mtime(argv[0]) < mtime(__FILE__)){
             printf("recompile \"%s\" before running\n", __FILE__);
@@ -41,6 +45,9 @@ int main(int argc, char* argv[]){
                   free(ln);
                   break;
             }
+            if(fill_all_ws && fill != ' ')
+                  for(int i = 0; i < len; ++i)
+                        if(ln[i] == ' ')ln[i] = fill;
             ln[len-1] = '\0';
             txt[n++] = ln;
             if(len > ml)ml = len;
