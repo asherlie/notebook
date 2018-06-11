@@ -1,5 +1,5 @@
 # notebook
-anything written in the lines between the multiline comments of notebook.c will be pretty printed
+anything written in the lines between the #if 0 and #endif in notebook.c will be pretty printed
 
 if notebook.c has been edited without being recompiled, this program will refuse to print anything
 

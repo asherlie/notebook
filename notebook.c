@@ -1,8 +1,13 @@
 #if 0
-/*
-notes can be anywhere within this comment
-and will be pretty printed
-*/
+notes can be anywhere within the #if 0 and the #endif
+
+and they will be pretty printed
+
+notes can contain any
+number
+of
+lines
+and any character !@#$%^&*()-=_+  /* */
 #endif
 int nl = __LINE__-4;
 #include <stdio.h>
@@ -25,14 +30,14 @@ int main(int argc, char* argv[]){
       char fill = ' ';
       if(argc > 1)fill = *argv[1];
       FILE* fp = fopen(__FILE__, "r");
-      fseek(fp, 9, SEEK_SET);
+      fseek(fp, 6, SEEK_SET);
       size_t sz = 0;
       char* txt[nl]; unsigned char n=0, ml=0;
       int len;
       while(1){
             char* ln = NULL;
             sz = 0;
-            if((len = getline(&ln, &sz, fp)) == EOF || strstr(ln, "*/")){
+            if((len = getline(&ln, &sz, fp)) == EOF || !strncmp(ln, "#endif", 6)){
                   free(ln);
                   break;
             }
