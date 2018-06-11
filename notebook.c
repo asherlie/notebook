@@ -22,9 +22,10 @@ int mtime(char* path){
 }
 
 int main(int argc, char* argv[]){
-      _Bool fill_all_ws = 0;
+      _Bool fill_all_ws = 0, fill_leading_ws = 0;
       for(int i = 1; i < argc; ++i){
-            if(!strncmp(argv[i], "-fa", 4))fill_all_ws = 1;
+            if(!strncmp(argv[i], "-fa", 4))fill_leading_ws = fill_all_ws = 1;
+            if(!strncmp(argv[i], "-fl", 4))fill_leading_ws = 1;
       }
       if(*argv[0] == '.')argv[0] += 2;
       if(mtime(argv[0]) < mtime(__FILE__)){
@@ -45,9 +46,11 @@ int main(int argc, char* argv[]){
                   free(ln);
                   break;
             }
-            if(fill_all_ws && fill != ' ')
-                  for(int i = 0; i < len; ++i)
+            if((fill_all_ws || fill_leading_ws)&& fill != ' ')
+                  for(int i = 0; i < len; ++i){
                         if(ln[i] == ' ')ln[i] = fill;
+                        else if(!fill_all_ws)break;
+                  }
             ln[len-1] = '\0';
             txt[n++] = ln;
             if(len > ml)ml = len;
