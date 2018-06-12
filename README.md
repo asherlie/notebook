@@ -7,12 +7,13 @@ if notebook.c has been edited without being recompiled, this program will refuse
 
 there are two available flags:
 
-`-fa` and `-fl`
-if fill all is enabled by the flag -fa, ALL whitespace will be filled by the filler character
+#### -fa:
+fill all
+* ALL whitespace will be filled by the filler character
+* if -fa is enabled, -fl will do nothing
 
-if fill leading is enabled by the flag -fl, leading whitespace will be filled by the filler character
-
-if -fa is enabled, -fl will do nothing
+#### -fl:
+* leading whitespace will be filled by the filler character
 
 the filler character is the first character of the first argument passed. if no argument is passed, the filler character is ' '
 
