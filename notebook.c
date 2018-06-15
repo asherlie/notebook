@@ -5,6 +5,8 @@ and they will be pretty printed
 
 ... if a line begins with "..." it will not be pretty printed
                   ... these `comment` lines can have any amount of leading whitespace
+\... a leading "..." can be escaped with a \ to be pretty printed
+
 notes can contain any
       number
             of
@@ -53,11 +55,22 @@ int main(int argc, char* argv[]){
             char* com;
             if((com = strstr(ln, "..."))){
                   _Bool is_c = 1;
-                  for(char* pos = ln; pos != com; ++pos)
-                        if(*pos != ' '){
-                              is_c = 0;
-                              break;
-                        }
+                  if(com > ln && *(com-1) == '\\'){
+                        is_c = 0;
+                        *(com-1) = '.';
+                        uint32_t i = 0;
+                        // -2 bc of \n
+                        for(; i < len-(com-ln)-2; ++i)
+                              com[i] = com[i+1];
+                        com[i] = '\0';
+                  }
+                  else{
+                        for(char* pos = ln; pos != com; ++pos)
+                              if(*pos != ' '){
+                                    is_c = 0;
+                                    break;
+                              }
+                  }
                   if(is_c){
                         free(ln);
                         continue;
