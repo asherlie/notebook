@@ -11,6 +11,7 @@ and any character !@#$%^&*()-=_+  /* */
 #endif
 int nl = __LINE__-3;
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -37,8 +38,8 @@ int main(int argc, char* argv[]){
       FILE* fp = fopen(__FILE__, "r");
       fseek(fp, 6, SEEK_SET);
       size_t sz = 0;
-      char* txt[nl]; unsigned char n=0, ml=0;
-      int len;
+      char* txt[nl]; uint8_t n=0, ml=0;
+      uint32_t len;
       while(1){
             char* ln = NULL;
             sz = 0;
@@ -47,7 +48,7 @@ int main(int argc, char* argv[]){
                   break;
             }
             if((fill_all_ws || fill_leading_ws)&& fill != ' ')
-                  for(int i = 0; i < len; ++i){
+                  for(uint32_t i = 0; i < len; ++i){
                         if(ln[i] == ' ')ln[i] = fill;
                         else if(!fill_all_ws)break;
                   }
@@ -56,20 +57,18 @@ int main(int argc, char* argv[]){
             if(len > ml)ml = len;
       }
       putchar(' ');
-      for(int i = 0; i < ml; ++i){
+      for(uint32_t i = 0; i < ml; ++i)
             putchar('-');
-      }
       putchar('\n');
-      for(int i = 0; i < n; ++i){
+      for(uint32_t i = 0; i < n; ++i){
             printf("|%s", txt[i]);
             for(int j = strlen(txt[i])+1; j < ml; ++j)putchar(fill);
             puts("|");
             free(txt[i]);
       }
       putchar(' ');
-      for(int i = 0; i < ml; ++i){
+      for(uint32_t i = 0; i < ml; ++i)
             putchar('-');
-      }
       putchar('\n');
       fclose(fp);
 }
