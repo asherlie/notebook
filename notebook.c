@@ -1,3 +1,18 @@
+#if 0
+notes can be anywhere within the #if 0 and the #endif
+
+and they will be pretty printed
+
+... if a line begins with "..." it will not be pretty printed
+                  ... these `comment` lines can have any amount of leading whitespace
+\... a leading "..." can be escaped with a \ to be pretty printed
+
+notes can contain any
+      number
+            of
+                  lines
+and any character !@#$%^&*()-=_+  /* */
+#endif
 int nl = __LINE__-3;
 
 #include <stdio.h>
@@ -14,9 +29,12 @@ int mtime(char* path){
 
 int nlines(){
       FILE* fp = fopen(__FILE__, "r");
-      fseek(fp, 0L, SEEK_END);
-      return ftell(fp);
+      int ret = 0;
+      char c;
+      while((c = fgetc(fp)) != EOF)
+            if(c == '\n')++ret;
       fclose(fp);
+      return ret;
 }
 
 int main(int argc, char* argv[]){
@@ -38,6 +56,7 @@ int main(int argc, char* argv[]){
       if(nl < 0)nl = nlines();
       else fseek(fp, 6, SEEK_SET);
       char* txt[nl]; uint8_t n=0, ml=0;
+      int nc = 0;
       uint32_t len;
       while(1){
             char* ln = NULL;
@@ -66,6 +85,7 @@ int main(int argc, char* argv[]){
                               }
                   }
                   if(is_c){
+                        ++nc;
                         free(ln);
                         continue;
                   }
@@ -94,4 +114,5 @@ int main(int argc, char* argv[]){
             putchar('-');
       putchar('\n');
       fclose(fp);
+      if(info)printf("%i lines printed\n%i comment lines not printed\n", nl, nc);
 }
