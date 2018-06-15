@@ -1,18 +1,3 @@
-#if 0
-notes can be anywhere within the #if 0 and the #endif
-
-and they will be pretty printed
-
-... if a line begins with "..." it will not be pretty printed
-                  ... these `comment` lines can have any amount of leading whitespace
-\... a leading "..." can be escaped with a \ to be pretty printed
-
-notes can contain any
-      number
-            of
-                  lines
-and any character !@#$%^&*()-=_+  /* */
-#endif
 int nl = __LINE__-3;
 
 #include <stdio.h>
@@ -27,9 +12,17 @@ int mtime(char* path){
       return att.st_mtime;
 }
 
+int nlines(){
+      FILE* fp = fopen(__FILE__, "r");
+      fseek(fp, 0L, SEEK_END);
+      return ftell(fp);
+      fclose(fp);
+}
+
 int main(int argc, char* argv[]){
-      _Bool fill_all_ws = 0, fill_leading_ws = 0;
+      _Bool fill_all_ws = 0, fill_leading_ws = 0, info = 0;
       for(int i = 1; i < argc; ++i){
+            if(!strncmp(argv[i], "-i", 3))info = 1;
             if(!strncmp(argv[i], "-fa", 4))fill_leading_ws = fill_all_ws = 1;
             if(!strncmp(argv[i], "-fl", 4))fill_leading_ws = 1;
       }
@@ -41,8 +34,9 @@ int main(int argc, char* argv[]){
       char fill = ' ';
       if(argc > 1)fill = *argv[1];
       FILE* fp = fopen(__FILE__, "r");
-      fseek(fp, 6, SEEK_SET);
       size_t sz = 0;
+      if(nl < 0)nl = nlines();
+      else fseek(fp, 6, SEEK_SET);
       char* txt[nl]; uint8_t n=0, ml=0;
       uint32_t len;
       while(1){
