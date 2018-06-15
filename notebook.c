@@ -3,6 +3,8 @@ notes can be anywhere within the #if 0 and the #endif
 
 and they will be pretty printed
 
+... if a line begins with "..." it will not be pretty printed
+                  ... these `comment` lines can have any amount of leading whitespace
 notes can contain any
       number
             of
@@ -10,6 +12,7 @@ notes can contain any
 and any character !@#$%^&*()-=_+  /* */
 #endif
 int nl = __LINE__-3;
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -47,7 +50,20 @@ int main(int argc, char* argv[]){
                   free(ln);
                   break;
             }
-            if((fill_all_ws || fill_leading_ws)&& fill != ' ')
+            char* com;
+            if((com = strstr(ln, "..."))){
+                  _Bool is_c = 1;
+                  for(char* pos = ln; pos != com; ++pos)
+                        if(*pos != ' '){
+                              is_c = 0;
+                              break;
+                        }
+                  if(is_c){
+                        free(ln);
+                        continue;
+                  }
+            }
+            if((fill_all_ws || fill_leading_ws) && fill != ' ')
                   for(uint32_t i = 0; i < len; ++i){
                         if(ln[i] == ' ')ln[i] = fill;
                         else if(!fill_all_ws)break;
