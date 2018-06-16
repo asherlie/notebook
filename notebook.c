@@ -4,8 +4,9 @@ notes can be anywhere within the #if 0 and the #endif
 and they will be pretty printed
 
 ... if a line begins with "..." it will not be pretty printed
-                  ... these `comment` lines can have any amount of leading whitespace
-\... a leading "..." can be escaped with a \ to be pretty printed
+anything following a "\..." on a line will not be pretty printed
+                  ... these `comment` lines act the same as c style single line comments (//)
+\... to print the string "\...", the escape character '\' can be used
 
 notes can contain any
       number
@@ -65,31 +66,74 @@ int main(int argc, char* argv[]){
                   free(ln);
                   break;
             }
-            char* com;
-            if((com = strstr(ln, "..."))){
-                  _Bool is_c = 1;
+            char* com = ln;
+            // TODO: maybe treat ... like c style //
+            // that is, cut off the rest of the line but keep leading chars
+            /*if((com = strstr(ln, "...")))*com = '\0';*/
+            /*
+             *if((com = strstr(ln, "..."))){
+             *      _Bool is_c = 1;
+             *      if(com > ln && *(com-1) == '\\'){
+             *            is_c = 0;
+             *            *(com-1) = '.';
+             *            uint32_t i = 0;
+             *            // -2 bc of \n
+             *            for(; i < len-(com-ln)-2; ++i)
+             *                  com[i] = com[i+1];
+             *            com[i] = '\0';
+             *            --len;
+             *      }
+             *      else{
+             *            for(char* pos = ln; pos != com; ++pos)
+             *                  if(*pos != ' '){
+             *                        is_c = 0;
+             *                        break;
+             *                  }
+             *      }
+             *      if(is_c){
+             *            ++nc;
+             *            free(ln);
+             *            continue;
+             *      }
+             *}
+             */
+
+            /*
+             *if((com = strstr(ln, "..."))){
+             *      // if escaped
+             *      if(com > ln && *(com-1) == '\\'){
+             *            printf("in esca branch for %s\n", com);
+             *            *(com-1) = '.';
+             *            uint32_t i = 0;
+             *            // -2 bc of \n
+             *            for(; i < len-(com-ln)-2; ++i)
+             *                  com[i] = com[i+1];
+             *            com[i] = '\0';
+             *            --len;
+             *      }
+             *      else{
+             *            len -= strlen(com)-1;
+             *            *com = '\0';
+             *      }
+             *}
+             */
+
+            while((com = strstr(com, "..."))){
                   if(com > ln && *(com-1) == '\\'){
-                        is_c = 0;
                         *(com-1) = '.';
                         uint32_t i = 0;
                         // -2 bc of \n
                         for(; i < len-(com-ln)-2; ++i)
                               com[i] = com[i+1];
                         com[i] = '\0';
+                        --len;
                   }
                   else{
-                        for(char* pos = ln; pos != com; ++pos)
-                              if(*pos != ' '){
-                                    is_c = 0;
-                                    break;
-                              }
-                  }
-                  if(is_c){
-                        ++nc;
-                        free(ln);
-                        continue;
+                        len -= strlen(com)-1;
+                        *com = '\0';
                   }
             }
+            
             if((fill_all_ws || fill_leading_ws) && fill != ' ')
                   for(uint32_t i = 0; i < len; ++i){
                         if(ln[i] == ' ')ln[i] = fill;
@@ -99,20 +143,20 @@ int main(int argc, char* argv[]){
             txt[n++] = ln;
             if(len > ml)ml = len;
       }
-      putchar(' ');
-      for(uint32_t i = 0; i < ml; ++i)
+      putchar('/');
+      for(uint32_t i = 0; i < ml-1; ++i)
             putchar('-');
-      putchar('\n');
+      puts("\\");
       for(uint32_t i = 0; i < n; ++i){
             printf("|%s", txt[i]);
             for(int j = strlen(txt[i])+1; j < ml; ++j)putchar(fill);
             puts("|");
             free(txt[i]);
       }
-      putchar(' ');
-      for(uint32_t i = 0; i < ml; ++i)
+      putchar('\\');
+      for(uint32_t i = 0; i < ml-1; ++i)
             putchar('-');
-      putchar('\n');
+      puts("/");
       fclose(fp);
       if(info)printf("%i lines printed\n%i comment lines not printed\n", nl, nc);
 }
