@@ -67,57 +67,6 @@ int main(int argc, char* argv[]){
                   break;
             }
             char* com = ln;
-            // TODO: maybe treat ... like c style //
-            // that is, cut off the rest of the line but keep leading chars
-            /*if((com = strstr(ln, "...")))*com = '\0';*/
-            /*
-             *if((com = strstr(ln, "..."))){
-             *      _Bool is_c = 1;
-             *      if(com > ln && *(com-1) == '\\'){
-             *            is_c = 0;
-             *            *(com-1) = '.';
-             *            uint32_t i = 0;
-             *            // -2 bc of \n
-             *            for(; i < len-(com-ln)-2; ++i)
-             *                  com[i] = com[i+1];
-             *            com[i] = '\0';
-             *            --len;
-             *      }
-             *      else{
-             *            for(char* pos = ln; pos != com; ++pos)
-             *                  if(*pos != ' '){
-             *                        is_c = 0;
-             *                        break;
-             *                  }
-             *      }
-             *      if(is_c){
-             *            ++nc;
-             *            free(ln);
-             *            continue;
-             *      }
-             *}
-             */
-
-            /*
-             *if((com = strstr(ln, "..."))){
-             *      // if escaped
-             *      if(com > ln && *(com-1) == '\\'){
-             *            printf("in esca branch for %s\n", com);
-             *            *(com-1) = '.';
-             *            uint32_t i = 0;
-             *            // -2 bc of \n
-             *            for(; i < len-(com-ln)-2; ++i)
-             *                  com[i] = com[i+1];
-             *            com[i] = '\0';
-             *            --len;
-             *      }
-             *      else{
-             *            len -= strlen(com)-1;
-             *            *com = '\0';
-             *      }
-             *}
-             */
-
             while((com = strstr(com, "..."))){
                   if(com > ln && *(com-1) == '\\'){
                         *(com-1) = '.';
@@ -133,7 +82,6 @@ int main(int argc, char* argv[]){
                         *com = '\0';
                   }
             }
-            
             if((fill_all_ws || fill_leading_ws) && fill != ' ')
                   for(uint32_t i = 0; i < len; ++i){
                         if(ln[i] == ' ')ln[i] = fill;
