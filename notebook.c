@@ -40,10 +40,17 @@ int nlines(){
 
 int main(int argc, char* argv[]){
       _Bool fill_all_ws = 0, fill_leading_ws = 0, info = 0;
+      int force_width = 0;
+      char* com_str = malloc(4); strncpy(com_str, "...", 3); com_str[3] = '\0';
       for(int i = 1; i < argc; ++i){
             if(!strncmp(argv[i], "-i", 3))info = 1;
+            if(!strncmp(argv[i], "-c", 3) && argc > i+1){
+                  free(com_str);
+                  com_str = argv[i+1];
+            }
             if(!strncmp(argv[i], "-fa", 4))fill_leading_ws = fill_all_ws = 1;
             if(!strncmp(argv[i], "-fl", 4))fill_leading_ws = 1;
+            if(!strncmp(argv[i], "-fw", 4))force_width = 1;
       }
       if(*argv[0] == '.')argv[0] += 2;
       if(mtime(argv[0]) < mtime(__FILE__)){
@@ -67,9 +74,9 @@ int main(int argc, char* argv[]){
                   break;
             }
             char* com = ln;
-            while((com = strstr(com, "..."))){
+            while((com = strstr(com, com_str))){
                   if(com > ln && *(com-1) == '\\'){
-                        *(com-1) = '.';
+                        *(com-1) = *com_str;
                         uint32_t i = 0;
                         // -2 bc of \n
                         for(; i < len-(com-ln)-2; ++i)
@@ -78,6 +85,7 @@ int main(int argc, char* argv[]){
                         --len;
                   }
                   else{
+                        // TODO: should this skip line???
                         len -= strlen(com)-1;
                         *com = '\0';
                   }
