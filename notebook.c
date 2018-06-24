@@ -28,8 +28,11 @@ int mtime(char* path){
       return att.st_mtime;
 }
 
-int nlines(){
-      FILE* fp = fopen(__FILE__, "r");
+int nlines(char* ef){
+      FILE* fp;
+      // TODO: add error handling for !fp
+      if(ef)fp = fopen(ef, "r");
+      else fp = fopen(__FILE__, "r");
       int ret = 0;
       char c;
       while((c = fgetc(fp)) != EOF)
@@ -42,8 +45,10 @@ int main(int argc, char* argv[]){
       _Bool fill_all_ws = 0, fill_leading_ws = 0, info = 0;
       int force_width = 0;
       char* com_str = malloc(4); strncpy(com_str, "...", 3); com_str[3] = '\0';
+      char* ex_file = NULL;
       for(int i = 1; i < argc; ++i){
             if(!strncmp(argv[i], "-i", 3))info = 1;
+            if(!strncmp(argv[i], "-f", 3) && argc > i+1)ex_file = argv[i+1];
             if(!strncmp(argv[i], "-c", 3) && argc > i+1){
                   free(com_str);
                   com_str = argv[i+1];
@@ -53,15 +58,17 @@ int main(int argc, char* argv[]){
             if(!strncmp(argv[i], "-fw", 4))force_width = 1;
       }
       if(*argv[0] == '.')argv[0] += 2;
-      if(mtime(argv[0]) < mtime(__FILE__)){
+      if(!ex_file && mtime(argv[0]) < mtime(__FILE__)){
             printf("recompile \"%s\" before running\n", __FILE__);
             return -1;
       }
       char fill = ' ';
       if(argc > 1)fill = *argv[1];
-      FILE* fp = fopen(__FILE__, "r");
+      FILE* fp;
+      if(ex_file)fp = fopen(ex_file, "r");
+      else fp = fopen(__FILE__, "r");
       size_t sz = 0;
-      if(nl < 0)nl = nlines();
+      if(ex_file || nl < 0)nl = nlines(ex_file);
       else fseek(fp, 6, SEEK_SET);
       char* txt[nl]; uint8_t n=0, ml=0;
       int nc = 0;
@@ -103,6 +110,7 @@ int main(int argc, char* argv[]){
       for(uint32_t i = 0; i < ml-1; ++i)
             putchar('-');
       puts("\\");
+      // TODO: handle leading tabs
       for(uint32_t i = 0; i < n; ++i){
             printf("|%s", txt[i]);
             for(int j = strlen(txt[i])+1; j < ml; ++j)putchar(fill);
